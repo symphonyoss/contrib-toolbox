@@ -44,7 +44,7 @@ if [[ $# -eq 0 ]] ; then
   echo 'Source code can be specified as file-system path or URL pointing to a ZIP file'
   echo ''
   echo 'Usage: ./validate-license-source <folder_to_scan_path|URL_to_zip_file>'
-  echo 'Example: ./validate-license-source https://symphonyoss.atlassian.net/secure/attachment/10400/VirtualDesk_Xmpp.zip'
+  echo 'Example: curl -L https://raw.githubusercontent.com/symphonyoss/contrib-toolbox/master/validate-license-source.sh | bash -s -- https://symphonyoss.atlassian.net/secure/attachment/10400/VirtualDesk_Xmpp.zip'
   exit 0
 fi
 
