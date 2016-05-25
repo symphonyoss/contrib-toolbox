@@ -29,8 +29,8 @@ TMP_FOLDER_PARENT=/tmp
 TMP_FOLDER=$TMP_FOLDER_PARENT/validate-license-source
 LICENSED_TO_SSF_MATCH="Licensed to The Symphony Software Foundation (SSF)"
 ASF_LICENSE_MATCH="to you under the Apache License, Version 2.0"
-NOTICE_MATCH="http://symphony.foundation\|Copyright 2016 The Symphony Software Foundation"
-LICENSE_MATCH="http://www.apache.org/licenses/\|Version 2.0, January 2004\|Copyright 2016 The Symphony Software Foundation"
+NOTICE_MATCH=("http://symphony.foundation" "Copyright 2016 The Symphony Software Foundation")
+LICENSE_MATCH=("http://www.apache.org/licenses/" "Version 2.0, January 2004" "Copyright 2016 The Symphony Software Foundation")
 NOT_INCLUDED_LICENSES="Binary Code License (BCL)\|GNU GPL 1\|GNU GPL 2\|GNU GPL 3\|GNU LGPL 2\|GNU LGPL 2.1\|GNU LGPL 3\|Affero GPL 3\|NPL 1.0\|NPL 1.1\|QPL\|Sleepycat License\|Microsoft Limited Public License\|Code Project Open License\|CPOL"
 ITEM_TO_SCAN=$1
 
@@ -61,14 +61,24 @@ fi
 
 if [ ! -f "$FOLDER_TO_SCAN/LICENSE" ]; then
   echo "CRIT-1 - Missing LICENSE file"
-elif ! grep -R "$LICENSE_MATCH" $FOLDER_TO_SCAN/LICENSE > /dev/null; then
-  echo "CRIT-2 - LICENSE file is missing ASF URL"
+else
+  for match in "${LICENSE_MATCH[@]}"; do
+    grep -L "$match" $FOLDER_TO_SCAN/LICENSE > /dev/null
+    if [ $? == 1 ]; then
+      echo "CRIT-1 - LICENSE file not matching '$match'"
+    fi
+  done
 fi
 
 if [ ! -f "$FOLDER_TO_SCAN/NOTICE" ]; then
   echo "CRIT-2 - Missing NOTICE file"
-elif ! grep -R "$NOTICE_MATCH" $FOLDER_TO_SCAN/NOTICE > /dev/null; then
-  echo "CRIT-2 - NOTICE file is missing SSF Copyright"
+else
+  for match in "${NOTICE_MATCH[@]}"; do
+    grep -L "$match" $FOLDER_TO_SCAN/NOTICE > /dev/null
+    if [ $? == 1 ]; then
+      echo "CRIT-2 - NOTICE file not matching '$match'"
+    fi
+  done
 fi
 
 echo "CRIT-3 - List of files not licensed to The Symphony Software Foundation (SSF) ..."
