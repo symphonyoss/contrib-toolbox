@@ -23,7 +23,7 @@
 # Description: Validates source code against Symphony Software Foundation (SSF) acceptance criteria returning a list of issues - https://symphonyoss.atlassian.net/wiki/x/SAAx ; source code can be specified as file-system path or URL pointing to a ZIP file
 # Tested on:
 # 1. OSX Terminal (SHELL=/bin/zsh)
-# 2. Windows Bash, installed following http://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/
+# 2. Ubuntu 16.04
 #
 TMP_FOLDER_PARENT=/tmp
 TMP_FOLDER=$TMP_FOLDER_PARENT/validate-license-source
@@ -33,6 +33,8 @@ NOTICE_MATCH=("http://symphony.foundation" "Copyright 2016 The Symphony Software
 LICENSE_MATCH=("http://www.apache.org/licenses/" "Version 2.0, January 2004" "Copyright 2016 The Symphony Software Foundation")
 NOT_INCLUDED_LICENSES="Binary Code License (BCL)\|GNU GPL 1\|GNU GPL 2\|GNU GPL 3\|GNU LGPL 2\|GNU LGPL 2.1\|GNU LGPL 3\|Affero GPL 3\|NPL 1.0\|NPL 1.1\|QPL\|Sleepycat License\|Microsoft Limited Public License\|Code Project Open License\|CPOL"
 ITEM_TO_SCAN=$1
+DEFAULT_ITEMS_TO_IGNORE=".*\.jar .*\.classpath .*\.project .*README.*, .*\.sln, .*\.csproj, .*\.json, .*\.git)"
+REGEX_DEFAULT_IGNORES=$(printf "! -regex %s " $(echo $DEFAULT_ITEMS_TO_IGNORE))
 
 # Cleaning and creating $TMP_FOLDER
 rm -rf $TMP_FOLDER; mkdir -p $TMP_FOLDER
@@ -59,39 +61,66 @@ elif [[ "$ITEM_TO_SCAN" == http* ]]; then
   fi
 fi
 
-if [ ! -f "$FOLDER_TO_SCAN/LICENSE" ]; then
+if [ -f "$FOLDER_TO_SCAN/LICENSE" ]; then
+  LICENSE_FILE=$FOLDER_TO_SCAN/LICENSE
+elif [ -f "$FOLDER_TO_SCAN/LICENSE.txt" ]; then
+  LICENSE_FILE=$FOLDER_TO_SCAN/LICENSE.txt
+fi
+
+if [ -f "$FOLDER_TO_SCAN/NOTICE" ]; then
+  NOTICE_FILE=$FOLDER_TO_SCAN/NOTICE
+elif [ -f "$FOLDER_TO_SCAN/NOTICE.txt" ]; then
+  NOTICE_FILE=$FOLDER_TO_SCAN/NOTICE.txt
+fi
+
+if [ -z $LICENSE_FILE ]; then
   echo "CRIT-1 - Missing LICENSE file"
 else
   for match in "${LICENSE_MATCH[@]}"; do
-    grep -L "$match" $FOLDER_TO_SCAN/LICENSE > /dev/null
+    grep -Li "$match" $LICENSE_FILE > /dev/null
     if [ $? == 1 ]; then
       echo "CRIT-1 - LICENSE file not matching '$match'"
     fi
   done
 fi
 
-if [ ! -f "$FOLDER_TO_SCAN/NOTICE" ]; then
+if [ -z $NOTICE_FILE ]; then
   echo "CRIT-2 - Missing NOTICE file"
 else
   for match in "${NOTICE_MATCH[@]}"; do
-    grep -L "$match" $FOLDER_TO_SCAN/NOTICE > /dev/null
+    grep -Li "$match" $NOTICE_FILE > /dev/null
     if [ $? == 1 ]; then
       echo "CRIT-2 - NOTICE file not matching '$match'"
     fi
   done
 fi
 
+if [ -f $FOLDER_TO_SCAN/.ignore ]; then
+  IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .ignore))"
+fi
+if [ -f $FOLDER_TO_SCAN/.svnignore ]; then
+  IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .svnignore))"
+fi
+if [ -f $FOLDER_TO_SCAN/.gitignore ]; then
+  IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .gitignore))"
+fi
+
+CRIT3_IGNORES="$DEFAULT_ITEMS_TO_IGNORE .*LICENSE.* .*NOTICE.*"
+REGEX_CRIT3_IGNORES=$(printf "! -regex %s " $(echo $CRIT3_IGNORES))
+
 echo "CRIT-3 - List of files not licensed to The Symphony Software Foundation (SSF) ..."
 echo "==========================="
-find $FOLDER_TO_SCAN -type f ! -name 'LICENSE' ! -name 'NOTICE' ! -name '*.jar' ! -name '.classpath' ! -name '.project' | xargs -I {} grep -L "$LICENSED_TO_SSF_MATCH" {}
+find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Li "$LICENSED_TO_SSF_MATCH" {}
+
 echo "==========================="
 echo "CRIT-3 - List of files missing Apache license header"
 echo "==========================="
-find $FOLDER_TO_SCAN -type f ! -name 'LICENSE' ! -name 'NOTICE' ! -name '*.jar' ! -name '.classpath' ! -name '.project' | xargs -I {} grep -L "$ASF_LICENSE_MATCH" {}
+find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Li "$ASF_LICENSE_MATCH" {}
 echo "==========================="
 
 # Find licenses on source files that are incompatible with ASF 2.0
-RESULTS=`find $FOLDER_TO_SCAN -type f ! -name 'LICENSE' ! -name 'NOTICE' ! -name '*.jar' ! -name '.classpath' ! -name '.project' | xargs -I {} grep -R "$NOT_INCLUDED_LICENSES" {}`
+RESULTS=`find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Ri "$NOT_INCLUDED_LICENSES" {}`
+
 if [ -n "$RESULTS" ]; then
   echo "CRIT-4 - Check source code for incompatible licenses"
   echo "==========================="
@@ -108,7 +137,7 @@ for jarpath in $(find $FOLDER_TO_SCAN -type f -name \*.jar); do
   unzip $jarpath -d $TMP_EXPLODED_JAR/$jarname > /dev/null
 
   # Find licenses on source files that are incompatible with ASF 2.0
-  RESULTS=`find $TMP_EXPLODED_JAR/$jarname -type f ! -name '*.jar' ! -name '.classpath' ! -name '.project' | xargs -I {} grep -R "$NOT_INCLUDED_LICENSES" {}`
+  RESULTS=`find $TMP_EXPLODED_JAR/$jarname -type f $REGEX_DEFAULT_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Ri "$NOT_INCLUDED_LICENSES" {}`
   if [ -n "$RESULTS" ]; then
     echo "CRIT-4 - Check JAR $jarname for incompatible licenses"
     echo "==========================="
