@@ -36,6 +36,8 @@ ITEM_TO_SCAN=$1
 DEFAULT_ITEMS_TO_IGNORE=".*\.jar .*\.classpath .*\.project .*README.*, .*\.sln, .*\.csproj, .*\.json, .*\.git)"
 REGEX_DEFAULT_IGNORES=$(printf "! -regex %s " $(echo $DEFAULT_ITEMS_TO_IGNORE))
 
+ISSUES_FOUND=0
+
 # Cleaning and creating $TMP_FOLDER
 rm -rf $TMP_FOLDER; mkdir -p $TMP_FOLDER
 
@@ -75,22 +77,29 @@ fi
 
 if [ -z $LICENSE_FILE ]; then
   echo "CRIT-1 - Missing LICENSE file"
+  echo ""
+  ISSUES_FOUND=1
 else
   for match in "${LICENSE_MATCH[@]}"; do
     grep -Li "$match" $LICENSE_FILE > /dev/null
     if [ $? == 1 ]; then
       echo "CRIT-1 - LICENSE file not matching '$match'"
+      echo ""
+      ISSUES_FOUND=1
     fi
   done
 fi
 
 if [ -z $NOTICE_FILE ]; then
   echo "CRIT-2 - Missing NOTICE file"
+  ISSUES_FOUND=1
 else
   for match in "${NOTICE_MATCH[@]}"; do
     grep -Li "$match" $NOTICE_FILE > /dev/null
     if [ $? == 1 ]; then
       echo "CRIT-2 - NOTICE file not matching '$match'"
+      echo ""
+      ISSUES_FOUND=1
     fi
   done
 fi
@@ -108,15 +117,25 @@ fi
 CRIT3_IGNORES="$DEFAULT_ITEMS_TO_IGNORE .*LICENSE.* .*NOTICE.*"
 REGEX_CRIT3_IGNORES=$(printf "! -regex %s " $(echo $CRIT3_IGNORES))
 
-echo "CRIT-3 - List of files not licensed to The Symphony Software Foundation (SSF) ..."
-echo "==========================="
-find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Li "$LICENSED_TO_SSF_MATCH" {}
+RESULTS=`find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Li "$LICENSED_TO_SSF_MATCH" {}`
+if [ -n "$RESULTS" ]; then
+  echo "CRIT-3 - List of files not licensed to The Symphony Software Foundation (SSF) ..."
+  echo "==========================="
+  echo $RESULTS
+  echo "==========================="
+  echo ""
+  ISSUES_FOUND=1
+fi
 
-echo "==========================="
-echo "CRIT-3 - List of files missing Apache license header"
-echo "==========================="
-find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Li "$ASF_LICENSE_MATCH" {}
-echo "==========================="
+RESULTS=`find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Li "$ASF_LICENSE_MATCH" {}`
+if [ -n "$RESULTS" ]; then
+  echo "CRIT-3 - List of files missing Apache license header"
+  echo "==========================="
+  echo $RESULTS
+  echo "==========================="
+  echo ""
+  ISSUES_FOUND=1
+fi
 
 # Find licenses on source files that are incompatible with ASF 2.0
 RESULTS=`find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Ri "$NOT_INCLUDED_LICENSES" {}`
@@ -126,6 +145,8 @@ if [ -n "$RESULTS" ]; then
   echo "==========================="
   echo $RESULTS
   echo "==========================="
+  echo ""
+  ISSUES_FOUND=1
 fi
 
 # Find licenses on JAR files that are incompatible with ASF 2.0
@@ -143,10 +164,18 @@ for jarpath in $(find $FOLDER_TO_SCAN -type f -name \*.jar); do
     echo "==========================="
     echo $RESULTS
     echo "==========================="
+    echo ""
+    ISSUES_FOUND=1
   fi
 done
 
 #Deleting $TMP_FOLDER
 rm -rf $TMP_FOLDER
-echo ""
-echo "To fix the reported issues, read more on https://symphonyoss.atlassian.net/wiki/x/SAAx"
+
+if [ "$ISSUES_FOUND" -eq "1" ]; then
+  echo "Issues have been found and documented above; to fix them, please visit https://symphonyoss.atlassian.net/wiki/x/SAAx"
+  exit 1
+else
+  echo "No issues found."
+  exit 0
+fi
