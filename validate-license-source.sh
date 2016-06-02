@@ -31,7 +31,7 @@ LICENSED_TO_SSF_MATCH="Licensed to The Symphony Software Foundation (SSF)"
 ASF_LICENSE_MATCH="to you under the Apache License, Version 2.0"
 NOTICE_MATCH=("http://symphony.foundation" "Copyright 2016 The Symphony Software Foundation")
 LICENSE_MATCH=("http://www.apache.org/licenses/" "Version 2.0, January 2004" "Copyright 2016 The Symphony Software Foundation")
-NOT_INCLUDED_LICENSES="Binary Code License (BCL)\|GNU GPL 1\|GNU GPL 2\|GNU GPL 3\|GNU LGPL 2\|GNU LGPL 2.1\|GNU LGPL 3\|Affero GPL 3\|NPL 1.0\|NPL 1.1\|QPL\|Sleepycat License\|Microsoft Limited Public License\|Code Project Open License\|CPOL"
+NOT_INCLUDED_LICENSES="All rights reserved\|Binary Code License (BCL)\|GNU GPL 1\|GNU GPL 2\|GNU GPL 3\|GNU LGPL 2\|GNU LGPL 2.1\|GNU LGPL 3\|Affero GPL 3\|NPL 1.0\|NPL 1.1\|QPL\|Sleepycat License\|Microsoft Limited Public License\|Code Project Open License\|CPOL"
 ITEM_TO_SCAN=$1
 DEFAULT_ITEMS_TO_IGNORE=".*\.jar .*\.classpath .*\.project .*README.*, .*\.sln, .*\.csproj, .*\.json, .*\.git)"
 REGEX_DEFAULT_IGNORES=$(printf "! -regex %s " $(echo $DEFAULT_ITEMS_TO_IGNORE))
@@ -104,17 +104,19 @@ else
   done
 fi
 
-if [ -f $FOLDER_TO_SCAN/.ignore ]; then
-  IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .ignore))"
-fi
-if [ -f $FOLDER_TO_SCAN/.svnignore ]; then
-  IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .svnignore))"
-fi
-if [ -f $FOLDER_TO_SCAN/.gitignore ]; then
-  IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .gitignore))"
-fi
+# TODO - not working yet
+#
+# if [ -f $FOLDER_TO_SCAN/.ignore ]; then
+#   IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .ignore))"
+# fi
+# if [ -f $FOLDER_TO_SCAN/.svnignore ]; then
+#   IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .svnignore))"
+# fi
+# if [ -f $FOLDER_TO_SCAN/.gitignore ]; then
+#   IGNORE_ITEMS_FROM_FILE="$IGNORE_ITEMS_FROM_FILE $(printf "! -iname %s " $(cat .gitignore))"
+# fi
 
-CRIT3_IGNORES="$DEFAULT_ITEMS_TO_IGNORE .*LICENSE.* .*NOTICE.*"
+CRIT3_IGNORES="$DEFAULT_ITEMS_TO_IGNORE .*LICENSE.* .*NOTICE.* .*\.git.* .*\.svn.* .*\.sln .*\.csproj .*\.json"
 REGEX_CRIT3_IGNORES=$(printf "! -regex %s " $(echo $CRIT3_IGNORES))
 
 RESULTS=`find $FOLDER_TO_SCAN -type f $REGEX_CRIT3_IGNORES $IGNORE_ITEMS_FROM_FILE | xargs -I {} grep -Li "$LICENSED_TO_SSF_MATCH" {}`
