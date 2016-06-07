@@ -33,7 +33,7 @@ NOTICE_MATCH=("http://symphony.foundation" "Copyright 2016 The Symphony Software
 LICENSE_MATCH=("http://www.apache.org/licenses/" "Version 2.0, January 2004" "Copyright 2016 The Symphony Software Foundation")
 NOT_INCLUDED_LICENSES="All rights reserved\|Binary Code License (BCL)\|GNU GPL 1\|GNU GPL 2\|GNU GPL 3\|GNU LGPL 2\|GNU LGPL 2.1\|GNU LGPL 3\|Affero GPL 3\|NPL 1.0\|NPL 1.1\|QPL\|Sleepycat License\|Microsoft Limited Public License\|Code Project Open License\|CPOL"
 ITEM_TO_SCAN=$1
-DEFAULT_ITEMS_TO_IGNORE=".*\.jar .*\.classpath .*\.project .*README.*, .*\.sln, .*\.csproj, .*\.json, .*\.git)"
+DEFAULT_ITEMS_TO_IGNORE=".*\.jar .*\.classpath .*\.project .*README.* .*\.sln .*\.csproj .*\.json .*\.git)"
 REGEX_DEFAULT_IGNORES=$(printf "! -regex %s " $(echo $DEFAULT_ITEMS_TO_IGNORE))
 
 ISSUES_FOUND=0
