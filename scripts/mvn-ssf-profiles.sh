@@ -34,6 +34,10 @@ else
   MVN_PROFILES=$MVN_ALLBRANCHES_PROFILES
 fi
 
-echo "[MVN-SSF] Invoking mvn using profiles $MVN_PROFILES"
+if [ -n "$MVN_PROFILES" ]
+then
+  MVN_COMMAND="$MVN_COMMAND -P$MVN_PROFILES"
+  echo "[MVN-SSF] Invoking mvn using profiles $MVN_PROFILES"
+fi
 
-$MVN_COMMAND -P$MVN_PROFILES
+$MVN_COMMAND
