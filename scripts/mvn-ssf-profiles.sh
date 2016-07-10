@@ -2,6 +2,10 @@
 
 set -e
 
+# This scripts invokes Maven (mvn) using a configurable command ($MVN_COMMAND, defaults to "mvn package") and per-branch profiles
+# Set $MVN_MASTER_PROFILES to list profiles you want to use on master (defaults to "versioneye")
+# Set $MVN_ALLBRANCHES_PROFILES to list profiles you want to use on all branches but master (defaults to "")
+
 if [ -z "$SCM_BRANCH" ]
 then
   SCM_BRANCH=${TRAVIS_BRANCH}
@@ -9,7 +13,7 @@ fi
 
 if [ -z "$MVN_COMMAND" ]
 then
-  MVN_COMMAND="mvn clean package"
+  MVN_COMMAND="mvn package"
 fi  
 
 if [ -z "$MVN_MASTER_PROFILES" ]
