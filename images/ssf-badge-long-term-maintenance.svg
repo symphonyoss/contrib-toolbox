@@ -1,15 +1,15 @@
-<svg height="20" width="122" xmlns="http://www.w3.org/2000/svg">
+<svg height="20" width="194" xmlns="http://www.w3.org/2000/svg">
   <linearGradient id="b" x2="0" y2="100%">
     <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
     <stop offset="1" stop-opacity=".1"/>
   </linearGradient>
   <mask id="a">
-    <rect fill="#fff" height="20" rx="3" width="122"/>
+    <rect fill="#fff" height="20" rx="3" width="194"/>
   </mask>
   <g mask="url(#a)">
     <path d="M0 0h55v20H0z" fill="#555"/>
-    <path d="M55 0h67v20H55z" fill="#fe7d37"/>
-    <path d="M0 0h122v20H0z" fill="url(#b)"/>
+    <path d="M55 0h139v20H55z" fill="#007ec6"/>
+    <path d="M0 0h194v20H0z" fill="url(#b)"/>
   </g>
   <clipPath id="Clip_1">
     <path d="M2.015,1.967 L17.893,1.967 L17.893,18.434 L2.015,18.434 z"/>
@@ -29,7 +29,7 @@
   <g fill="#fff" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11" text-anchor="middle">
     <text fill="#010101" fill-opacity=".3" x="34.5" y="15">SSF</text>
     <text x="34.5" y="14">SSF</text>
-    <text fill="#010101" fill-opacity=".3" x="87.5" y="15">incubating</text>
-    <text x="87.5" y="14">incubating</text>
+    <text fill="#010101" fill-opacity=".3" x="123.5" y="15">long term maintenance</text>
+    <text x="123.5" y="14">long term maintenance</text>
   </g>
 </svg>
