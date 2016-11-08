@@ -3,7 +3,6 @@ github_orgs:
     bot-unfurl:
   symphonyoss:
     extension-api-angular-service:
-      master: https://symphonyoss.atlassian.net/secure/attachment/12401/fts_angular.zip|fts_angular
     RestApiClient:
     bot-bot:
     bot-butler:
