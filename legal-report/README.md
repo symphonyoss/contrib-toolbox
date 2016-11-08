@@ -47,6 +47,7 @@ In order to run the script, you need the following software installed:
 ```
 git clone git@github.com:symphonyoss/contrib-toolbox.git
 cd contrib-toolbox/legal-report
+cp legal_report_config.yaml.sample legal_report_config.yaml
 python ssf_legal_report.py
 ```
 
