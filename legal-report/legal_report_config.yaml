@@ -1,20 +1,41 @@
-github_org: symphonyoss
+github_orgs:
+  maoo:
+    bot-unfurl:
+  symphonyoss:
+    extension-api-angular-service:
+      master: https://symphonyoss.atlassian.net/secure/attachment/12401/fts_angular.zip|fts_angular
+    RestApiClient:
+    bot-bot:
+    bot-butler:
+    bot-fact:
+    bot-faq:
+    bot-greenhouse:
+    bot-home-security-talking:
+    bot-jenkins:
+    bot-jira:
+    bot-lunch-box:
+    bot-room-manager:
+    bot-sidekick:
+    bot-sym-browser:
+    bot-twilio:
+    bot-v-for-symphony:
+    bot-woodhouse:
+    certificate-toolbox:
+    clj-symphony:
+    contrib-toolbox:
+    embedding-api-examples:
+    extension-api-examples:
+    helpdesk-bot:
+    hubot-symphony:
+    ssf-enforcer-rules:
+    ssf-jar-resource-bundle:
+    ssf-parent-pom:
+    symphony-java-client:
+    symphony-java-sample-bots:
+
+preserve_downloads: true
 
 output_format: html
-
-include_github_repos:
-  - clj-symphony
-  # - symphony-java-client
-  # - bot-twilio
-  # - RestApiClient
-  # - bot-fact
-  # - bot-faq
-  # - bot-greenhouse
-  # - ssf-parent-pom
-  # - bot-sym-browser
-
-# exclude_github_repos:
-#   -
 
 output: ./reports
 

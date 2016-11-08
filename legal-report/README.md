@@ -12,11 +12,17 @@ The default configuration provides support for Maven, Leiningen and Npm builds.
 
 ## Configuration
 The report is configured with a YAML file (default is `./legal_report_config.yaml`) that allows you to configure:
-- The name of the github organisation to scan (`github_org: symphonyoss`)
+- The github organisations, projects and (optionally) branches to scan
+```
+github_orgs:
+  symphonyoss:
+    contrib-toolbox:
+    symphony-java-client:
+      - master
+      - develop
+```
+- Whether to preserve previous project checkouts or not; useful for testing, as it avoids to download the same project contents on every run (`preserve_downloads: true`)
 - The report output format (`output_format: html`); if `html`, a `report.html` file will be created in the same folder where the command is executed; if `json`, a `reports/` folder will include a `.json` file for each project scanned where issues were found
-- The github token (empty, as all projects are public)
-- Github project names to include (`include_github_repos:`, list)
-- Github project names to exclude (`exclude_github_repos:`, list)
 - The reports output folder (`output: ./reports`)
 - Folder where github projects are checked out (`github_checkout_folder: ./checkout`)
 - OS commands executed before running the scan (`execute_commands:`, list)
@@ -31,7 +37,6 @@ In order to run the script, you need the following software installed:
 - Python 2.7+ (`python`)
 - [Python Pip](https://pip.pypa.io/en/stable/) (`which pip`)
 - `pip install pyyaml`
-- `pip install PyGithub`
 - `git` (available on command-line)
 - Apache Maven (`mvn -v`)
 - Leiningen (`lein`)

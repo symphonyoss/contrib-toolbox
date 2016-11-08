@@ -5,7 +5,6 @@ import glob
 import yaml
 import sys
 import json
-from github import Github
 
 report_template_file = "{}/report-template.html".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -42,51 +41,51 @@ def replaceInFile(filePath,placeholder,value):
 def checkGithubOrg(config):
     currentDir = os.getcwd()
     projects = {}
-    g = Github(config['github_token'])
-    repos = g.get_organization(config['github_org']).get_repos()
-    for repo in repos:
-        if 'include_github_repos' in config and not repo.name in config['include_github_repos']:
-            print "repo '{}' is not included in 'include_github_repos'".format(repo.name)
-            continue
-        if 'exclude_github_repos' in config and repo.name in config['exclude_github_repos']:
-            print "repo '{}' is excluded in 'exclude_github_repos'".format(repo.name)
-            continue
-        project_checkout_folder = "{}/{}".format(config['github_checkout_folder'],repo.name)
-        if os.path.exists(project_checkout_folder):
-            print "pulling on {}".format(project_checkout_folder)
-            os.chdir(project_checkout_folder)
-            project_checkout_folder = "."
-            os.popen("git checkout master >/dev/null 2>&1")
-            os.popen("git pull >/dev/null 2>&1")
-        else:
-            print "cloning on {}".format(project_checkout_folder)
-            os.popen("git clone {} {} >/dev/null 2>&1".format(repo.clone_url, project_checkout_folder))
+    if not os.path.isdir(config['github_checkout_folder']):
+        os.makedirs(config['github_checkout_folder'])
+    os.chdir(config['github_checkout_folder'])
+    for github_org in config['github_orgs']:
+        for project in config['github_orgs'][github_org]:
+            if not config['github_orgs'][github_org][project]:
+                config['github_orgs'][github_org][project] = {"master" : None}
+            for branch in config['github_orgs'][github_org][project]:
+                customUrl = None
+                if config['github_orgs'][github_org][project][branch]:
+                    customUrl = config['github_orgs'][github_org][project][branch]
+                projectFolder = downloadProject(config,github_org,project,branch,customUrl)
+                os.chdir(projectFolder)
+                checkProject(projects,config,project,projectFolder,branch)
+                os.chdir("..")
 
-        if 'master_only' in config and config['master_only'] is True:
-            checkProject(projects,config,repo.name,project_checkout_folder,'master')
-        else:
-            # Iterate over branches
-            branches = os.popen('git branch -a').read().splitlines()
-            for branch in branches:
-                branch = branch.strip()
-                if branch.startswith('remotes/'):
-                    if "->" in branch:
-                        branch = branch.split("->",1)[0].strip()
-                    os.popen("git checkout {} >/dev/null 2>&1".format(branch))
-                    checkProject(config,project_checkout_folder,branch)
-        os.chdir(currentDir)
-
+    os.chdir(currentDir)
     if 'output_format' in config and config['output_format'] == "html":
-        print "html out"
         myjson = json.dumps(flattenHash(projects))
         replaceInFile(report_template_file,"{{JSON_VAR}}",myjson)
 
+def downloadProject(config,github_org,project,branch,customUrl):
+    if customUrl:
+        project_zip_url = customUrl.split('|')[0]
+        project_zip_path = customUrl.split('|')[1]
+    else:
+        project_zip_url = "https://codeload.github.com/{}/{}/zip/{}".format(github_org,project,branch)
+        project_zip_path = "{}-{}".format(project,branch)
+    if 'preserve_downloads' in config and config['preserve_downloads'] == True and os.path.isdir(project_zip_path):
+        return project_zip_path
+
+    project_zip_archive = "{}.zip".format(project_zip_path)
+    print "downloading '{}' into '{}'".format(project_zip_url,project_zip_archive)
+    os.popen("curl -L {} > {}".format(project_zip_url,project_zip_archive))
+    print "unzipping '{}' into '{}'".format(project_zip_url,project_zip_path)
+    os.popen("unzip {}".format(project_zip_archive))
+    return project_zip_path
+
 def checkProject(projects,config,project_name,project_checkout_folder,branch):
+    print "Scanning project {}".format(project_name)
     violations = {}
     checkNoticeFile(config,violations)
     checkLicenseFile(config,violations)
     executeCommands(config)
-    walk(violations,config,project_checkout_folder)
+    walk(violations,config,".")
     if violations:
         if 'output' in config:
             if not os.path.isdir(config['report_dir']):
@@ -123,12 +122,14 @@ def checkLine(violations,filePath, line,licenses,category):
 
 def walk(violations,config,folder):
     for root, dirs, files in os.walk(folder, topdown=False):
-            for name in files:
-                if not re.match(config['excluded_files_re'], root + name):
-                    checkFile(violations,config,root,name)
-            for name in dirs:
-                if not re.match(config['excluded_files_re'], root + name):
-                    walk(violations,config,name)
+        for name in files:
+            path = "{}/{}".format(root,name)
+            if not re.match(config['excluded_files_re'], path):
+                checkFile(violations,config,root,name)
+        for name in dirs:
+            path = "{}/{}".format(root,name)
+            if not re.match(config['excluded_files_re'], path):
+                walk(violations,config,name)
 
 def flattenHash(input_raw):
     result = {}
