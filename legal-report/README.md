@@ -54,6 +54,4 @@ python ssf_legal_report.py
 - `os.popen` call could be reimplemented with proper libraries
 - Improve function and file structure
 - Bundle the app (work on `build.sh`)
-- Avoid scanning, if `git pull` finds no changes
-- Whitelist branch names (ie `dev` and `develop`)
 - Improve code styling
