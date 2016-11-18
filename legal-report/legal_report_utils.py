@@ -12,7 +12,7 @@ def loadConfig():
     if len(sys.argv) > 1:
         configFile = sys.argv[1]
     else:
-        configFile = "license_report_config.yaml"
+        configFile = "legal_report_config.yaml"
     with open(configFile, 'r') as stream:
         try:
             config = yaml.load(stream)
