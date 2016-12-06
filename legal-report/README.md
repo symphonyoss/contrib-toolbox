@@ -3,8 +3,8 @@
 The `ssf_legal_report` is a Python script that generates a legal report of the [Symphony Software Foundation hosted projects](github.com/symphonyoss), to facilitate validation and compliance against the [SSF Legal Criteria](https://symphonyoss.atlassian.net/wiki/display/FM/Legal+Acceptance+Criteria?src=contextnavpagetreemode)
 
 It identifies:
-- LGL-1 and LGL-2 for missing `LICENSE` or `NOTICE` files
-- Flags Apache Category B and X licenses by scanning projects line by line
+- Missing `LICENSE` or `NOTICE` files
+- Apache Category B and X licenses by scanning projects line by line
 
 In order to run the same validation also on transitive dependencies, the script allows to run system commands prior to the scanning (see `execute_commands:` below), so that projects can run platform-specific license reports and add files in the root project folder.
 
