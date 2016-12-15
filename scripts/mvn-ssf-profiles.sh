@@ -40,5 +40,5 @@ then
   echo "[MVN-SSF] Invoking mvn using profiles $MVN_PROFILES"
 fi
 
-echo "[MVN-SSF] Invoking mvn command: $MVN_PROFILES"
+echo "[MVN-SSF] Invoking mvn command: $MVN_COMMAND"
 $MVN_COMMAND
