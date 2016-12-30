@@ -2,6 +2,12 @@
 
 set -e
 
+# DEPRECATED!
+# Please use the following syntax in .travis.yml, as it's easier and way more readable.
+# script:
+# - "[[ $TRAVIS_BRANCH =~ master ]] && mvn clean deploy -Pintegration-testing,versioneye --settings settings.xml || true"
+# - "[[ $TRAVIS_BRANCH =~ dev ]] && mvn clean deploy -Pintegration-testing --settings settings.xml || true"
+
 # This scripts invokes Maven (mvn) using a configurable command ($MVN_COMMAND, defaults to "mvn package") and per-branch profiles
 # Set $MVN_MASTER_PROFILES to list profiles you want to use on master (defaults to "versioneye")
 # Set $MVN_ALLBRANCHES_PROFILES to list profiles you want to use on all branches but master (defaults to "")
