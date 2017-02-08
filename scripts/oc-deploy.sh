@@ -53,6 +53,12 @@ if [[ -n "$OC_DEBUG" ]]; then
   ls -l .
   echo "list target folder..."
   ls -l target
+  echo "list TRAVIS_BUILD_DIR..."
+  ls -l $TRAVIS_BUILD_DIR
+  echo "list TRAVIS_BUILD_DIR..."
+  ls -l $TRAVIS_BUILD_DIR
+  echo "list TRAVIS_BUILD_DIR target..."
+  ls -l $TRAVIS_BUILD_DIR/target
 fi
 
 # Log into Openshift Online and use project botfarm
