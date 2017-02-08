@@ -31,6 +31,7 @@
 # - OC_TOKEN - The Openshift Online token
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
+# - OC_DEBUG (optional) - adds debug statements to stdout if not null
 
 # Define oc package coordinates
 OC_VERSION=v1.4.1
