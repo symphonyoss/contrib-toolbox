@@ -42,7 +42,7 @@ PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
-chmod +x $OC_FOLDER_NAME/*
+chmod +x $OC_FOLDER_NAME/oc
 
 if [[ -n "$OC_DEBUG" ]]; then
   echo "showing $OC_FOLDER_NAME folder content..."
@@ -50,6 +50,7 @@ if [[ -n "$OC_DEBUG" ]]; then
   echo "which oc..."
   which oc
 fi
+
 # Log into Openshift Online and use project botfarm
 oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
 echo "Logged into api.preview.openshift.com"
