@@ -40,13 +40,12 @@ OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/$OC_FO
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
-alias oc="./$OC_FOLDER_NAME/oc"
 echo "Downloaded and unpacked oc"
 
 # Log into Openshift Online and use project botfarm
-oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
+./$OC_FOLDER_NAME/oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
 echo "Logged into api.preview.openshift.com"
 
 # Start the build
-oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
+./$OC_FOLDER_NAME/oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
 echo "Build of $OC_BUILD_CONFIG_NAME completed"
