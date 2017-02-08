@@ -33,8 +33,10 @@
 # - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
 
 # Define oc package coordinates
-OC_FOLDER_NAME=openshift-origin-client-tools-v1.4.1+3f9807a-linux-64bit
-OC_URL="https://github-cloud.s3.amazonaws.com/releases/22442668/83533fda-e24e-11e6-8482-c37130d5b552.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAISTNZFOVBIJMK3TQ%2F20170208%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20170208T190405Z&X-Amz-Expires=300&X-Amz-Signature=cce326ef573f5904ff4c1461b08519e758630b0ad92f7e5c4db9b9bac2fcb686&X-Amz-SignedHeaders=host&actor_id=327285&response-content-disposition=attachment%3B%20filename%3Dopenshift-origin-client-tools-v1.4.1-3f9807a-linux-64bit.tar.gz&response-content-type=application%2Foctet-stream"
+OC_VERSION=v1.4.1
+OC_RELEASE=$OC_VERSION-3f9807a-linux-64bit
+OC_FOLDER_NAME=openshift-origin-client-tools-$OC_RELEASE
+OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/$OC_FOLDER_NAME.tar.gz"
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
