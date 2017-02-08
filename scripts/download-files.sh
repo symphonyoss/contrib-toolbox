@@ -52,8 +52,11 @@ echo "Downloading certs on $DOWNLOAD_PATH folder"
 
 for SUFFIX in $(echo $DOWNLOAD_ITEMS | sed "s/,/ /g")
 do
-  echo "Downloading cert"
+  echo "Downloading cert..."
   FILE_NAME=$(basename $SUFFIX)
   # curl -s -L https://$DOWNLOAD_HOST/$SUFFIX > $DOWNLOAD_PATH/$FILE_NAME
   curl -o $DOWNLOAD_PATH/$FILE_NAME -s -L --connect-timeout 60 https://$DOWNLOAD_HOST/$SUFFIX
+  echo "Cert downloaded"
 done
+
+exit 0
