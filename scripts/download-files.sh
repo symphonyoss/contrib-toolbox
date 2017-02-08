@@ -33,24 +33,26 @@
 #
 ###
 
-if [ -z "$DOWNLOAD_HOST" ]; then
+if [[ -z "$DOWNLOAD_HOST" ]]; then
   echo "Error on download-files.sh - cannot find DOWNLOAD_HOST environment variable"
   exit -1
 fi
 
-if [ -z "$DOWNLOAD_ITEMS" ]; then
+if [[ -z "$DOWNLOAD_ITEMS" ]]; then
   echo "Error on download-files.sh - cannot find DOWNLOAD_ITEMS environment variable"
   exit -1
 fi
 
-if [ -z "$DOWNLOAD_PATH" ]; then
+if [[ -z "$DOWNLOAD_PATH" ]]; then
   DOWNLOAD_PATH="."
 fi
 
 mkdir -p $DOWNLOAD_PATH
+echo "Downloading certs on $DOWNLOAD_PATH folder"
 
 for SUFFIX in $(echo $DOWNLOAD_ITEMS | sed "s/,/ /g")
 do
+  echo "Downloading cert"
   FILE_NAME=$(basename $SUFFIX)
   curl -s -L https://$DOWNLOAD_HOST/$SUFFIX > $DOWNLOAD_PATH/$FILE_NAME
 done
