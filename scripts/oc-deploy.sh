@@ -37,6 +37,7 @@ OC_VERSION=v1.4.1
 OC_RELEASE=3f9807a-linux-64bit
 OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
 OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
+PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
@@ -44,11 +45,13 @@ curl -L $OC_URL | tar xvz
 if [[ -n "$OC_DEBUG" ]]; then
   echo "showing $OC_FOLDER_NAME folder content..."
   ls -l $OC_FOLDER_NAME
+  echo "which oc..."
+  which oc
 fi
 # Log into Openshift Online and use project botfarm
-./$OC_FOLDER_NAME/oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
+oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
 echo "Logged into api.preview.openshift.com"
 
 # Start the build
-./$OC_FOLDER_NAME/oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
+oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
 echo "Build of $OC_BUILD_CONFIG_NAME completed"
