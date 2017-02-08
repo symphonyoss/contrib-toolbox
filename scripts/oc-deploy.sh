@@ -47,18 +47,6 @@ chmod +x $OC_FOLDER_NAME/oc
 if [[ -n "$OC_DEBUG" ]]; then
   echo "showing $OC_FOLDER_NAME folder content..."
   ls -l $OC_FOLDER_NAME
-  echo "which oc..."
-  which oc
-  echo "list current folder..."
-  ls -l .
-  echo "list target folder..."
-  ls -l target
-  echo "list TRAVIS_BUILD_DIR..."
-  ls -l $TRAVIS_BUILD_DIR
-  echo "list TRAVIS_BUILD_DIR..."
-  ls -l $TRAVIS_BUILD_DIR
-  echo "list TRAVIS_BUILD_DIR target..."
-  ls -l $TRAVIS_BUILD_DIR/target
 fi
 
 # Log into Openshift Online and use project botfarm
