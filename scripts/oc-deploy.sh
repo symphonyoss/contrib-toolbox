@@ -31,23 +31,39 @@
 # - OC_TOKEN - The Openshift Online token
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
-# - OC_DEBUG (optional) - adds debug statements to stdout if not null
 
-# Define oc package coordinates
-OC_VERSION=v1.4.1
-OC_RELEASE=3f9807a-linux-64bit
+# Environment variables overrides:
+# - OC_VERSION
+# - OC_RELEASE
+
 OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
 OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
 PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
+# Fail if no mandatory vars are missing
+if [[ -z "$OC_TOKEN" ]]; then
+  echo "Missing OC_TOKEN. Failing."
+  exit -1
+fi
+if [[ -z "$OC_BINARY_FOLDER" ]]; then
+  echo "Missing OC_BINARY_FOLDER. Failing."
+  exit -1
+fi
+if [[ -z "$OC_BUILD_CONFIG_NAME" ]]; then
+  echo "Missing OC_BUILD_CONFIG_NAME. Failing."
+  exit -1
+fi
+
+# Define oc package coordinate defaults
+if [[ -z "$OC_VERSION" ]]; then
+  OC_VERSION=v1.4.1
+fi
+if [[ -z "$OC_RELEASE" ]]; then
+  OC_RELEASE=3f9807a-linux-64bit
+fi
+
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
-chmod +x $OC_FOLDER_NAME/oc
-
-if [[ -n "$OC_DEBUG" ]]; then
-  echo "showing $OC_FOLDER_NAME folder content..."
-  ls -l $OC_FOLDER_NAME
-fi
 
 # Log into Openshift Online and use project botfarm
 oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
