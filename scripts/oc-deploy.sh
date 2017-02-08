@@ -42,6 +42,7 @@ PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
+chmod +x $OC_FOLDER_NAME/*
 
 if [[ -n "$OC_DEBUG" ]]; then
   echo "showing $OC_FOLDER_NAME folder content..."
