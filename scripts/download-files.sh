@@ -48,15 +48,15 @@ if [[ -z "$DOWNLOAD_PATH" ]]; then
 fi
 
 mkdir -p $DOWNLOAD_PATH
-echo "Downloading certs on $DOWNLOAD_PATH folder"
+if [[ -n "$DOWNLOAD_DEBUG" ]]; then echo "Downloading certs on $DOWNLOAD_PATH folder"; fi
 
 for SUFFIX in $(echo $DOWNLOAD_ITEMS | sed "s/,/ /g")
 do
-  echo "Downloading cert..."
+  if [[ -n "$DOWNLOAD_DEBUG" ]]; then echo "Downloading cert..."; fi
   FILE_NAME=$(basename $SUFFIX)
   # curl -s -L https://$DOWNLOAD_HOST/$SUFFIX > $DOWNLOAD_PATH/$FILE_NAME
   curl -o $DOWNLOAD_PATH/$FILE_NAME -s -L --connect-timeout 60 https://$DOWNLOAD_HOST/$SUFFIX
-  echo "Cert downloaded"
+  if [[ -n "$DOWNLOAD_DEBUG" ]]; then echo "Cert $DOWNLOAD_PATH/$FILE_NAME downloaded"; ls -l $DOWNLOAD_PATH/$FILE_NAME; fi
 done
 
 exit 0
