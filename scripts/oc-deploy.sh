@@ -34,9 +34,9 @@
 
 # Define oc package coordinates
 OC_VERSION=v1.4.1
-OC_RELEASE=$OC_VERSION-3f9807a-linux-64bit
-OC_FOLDER_NAME=openshift-origin-client-tools-$OC_RELEASE
-OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/$OC_FOLDER_NAME.tar.gz"
+OC_RELEASE=3f9807a-linux-64bit
+OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
+OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
