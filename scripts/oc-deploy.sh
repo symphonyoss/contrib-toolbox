@@ -49,6 +49,10 @@ if [[ -n "$OC_DEBUG" ]]; then
   ls -l $OC_FOLDER_NAME
   echo "which oc..."
   which oc
+  echo "list current folder..."
+  ls -l .
+  echo "list target folder..."
+  ls -l target
 fi
 
 # Log into Openshift Online and use project botfarm
