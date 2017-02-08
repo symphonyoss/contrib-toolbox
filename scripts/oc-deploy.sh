@@ -40,8 +40,11 @@ OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/$OC_FO
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
-echo "Downloaded and unpacked oc"
 
+if [[ -n "$OC_DEBUG" ]]; then
+  echo "showing $OC_FOLDER_NAME folder content..."
+  ls -l $OC_FOLDER_NAME
+fi
 # Log into Openshift Online and use project botfarm
 ./$OC_FOLDER_NAME/oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
 echo "Logged into api.preview.openshift.com"
