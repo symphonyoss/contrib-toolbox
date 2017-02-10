@@ -36,10 +36,6 @@
 # - OC_VERSION
 # - OC_RELEASE
 
-OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
-OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
-PATH=$PWD/$OC_FOLDER_NAME:$PATH
-
 # Fail if no mandatory vars are missing
 if [[ -z "$OC_TOKEN" ]]; then
   echo "Missing OC_TOKEN. Failing."
@@ -61,6 +57,10 @@ fi
 if [[ -z "$OC_RELEASE" ]]; then
   OC_RELEASE=3f9807a-linux-64bit
 fi
+
+OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
+OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
+PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
 # Download and unpack oc
 curl -L $OC_URL | tar xvz
