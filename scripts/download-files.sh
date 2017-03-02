@@ -64,4 +64,6 @@ do
   if [[ -n "$DOWNLOAD_DEBUG" ]]; then echo "Cert $DOWNLOAD_PATH/$FILE_NAME downloaded"; ls -l $DOWNLOAD_PATH/$FILE_NAME; fi
 done
 
+if [[ -n "$DOWNLOAD_DEBUG" ]]; then echo "listing certs..."; ls -la $DOWNLOAD_PATH ; fi
+
 exit 0
