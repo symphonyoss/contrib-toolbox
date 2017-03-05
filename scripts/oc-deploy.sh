@@ -63,7 +63,7 @@ OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/opensh
 PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
 # Download and unpack oc
-curl -L $OC_URL | tar xvz
+curl -Ls $OC_URL | tar xvz
 
 # Log into Openshift Online and use project botfarm
 oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
