@@ -29,7 +29,7 @@
 
 # Environment variables needed:
 # - OC_TOKEN - The Openshift Online token
-# - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm-dev
+# - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
 
@@ -52,7 +52,7 @@ if [[ -z "$OC_BUILD_CONFIG_NAME" ]]; then
 fi
 
 if [[ -z "$OC_PROJECT_NAME" ]]; then
-  export OC_PROJECT_NAME=botfarm-dev
+  export OC_PROJECT_NAME=botfarm
 fi
 echo "Using Openshift Online project $OC_PROJECT_NAME"
 
