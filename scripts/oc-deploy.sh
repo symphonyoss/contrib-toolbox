@@ -29,6 +29,7 @@
 
 # Environment variables needed:
 # - OC_TOKEN - The Openshift Online token
+# - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm-dev
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
 
@@ -50,6 +51,11 @@ if [[ -z "$OC_BUILD_CONFIG_NAME" ]]; then
   exit -1
 fi
 
+if [[ -z "$OC_PROJECT_NAME" ]]; then
+  export OC_PROJECT_NAME=botfarm-dev
+fi
+echo "Using Openshift Online project $OC_PROJECT_NAME"
+
 # Define oc package coordinate defaults
 if [[ -z "$OC_VERSION" ]]; then
   OC_VERSION=v1.4.1
@@ -66,7 +72,7 @@ PATH=$PWD/$OC_FOLDER_NAME:$PATH
 curl -Ls $OC_URL | tar xvz
 
 # Log into Openshift Online and use project botfarm
-oc login https://api.preview.openshift.com --token=$OC_TOKEN ; oc project botfarm
+oc login https://api.starter-us-east-1.openshift.com --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
 echo "Logged into api.preview.openshift.com"
 
 # Start the build
