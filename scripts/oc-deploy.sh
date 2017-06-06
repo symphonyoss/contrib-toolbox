@@ -59,15 +59,15 @@ echo "Using Openshift Online project $OC_PROJECT_NAME"
 
 # Define oc package coordinate defaults
 if [[ -z "$OC_VERSION" ]]; then
-  OC_VERSION=v1.4.1
+  OC_VERSION=v1.5.1
 fi
 if [[ -z "$OC_RELEASE" ]]; then
-  OC_RELEASE=3f9807a-linux-64bit
+  OC_RELEASE=7b451fc-linux-64bit
 fi
 
-OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
-if [[ "$OC_VERSION" == "v1.5.1" ]]; then
-  OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE
+OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE
+if [[ "$OC_VERSION" == "v1.4.1" ]]; then
+  OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
 fi
 
 OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
