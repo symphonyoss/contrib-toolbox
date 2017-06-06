@@ -31,6 +31,7 @@
 # - OC_TOKEN - The Openshift Online token
 # - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
+# - OC_BINARY_ARCHIVE - contains the local path to the binary archive to upload to the container as source
 # - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
 
 # Environment variables overrides:
@@ -42,8 +43,8 @@ if [[ -z "$OC_TOKEN" ]]; then
   echo "Missing OC_TOKEN. Failing."
   exit -1
 fi
-if [[ -z "$OC_BINARY_FOLDER" ]]; then
-  echo "Missing OC_BINARY_FOLDER. Failing."
+if [[ -z "$OC_BINARY_FOLDER" ]] || [[ -z "$OC_BINARY_ARCHIVE" ]]; then
+  echo "Missing OC_BINARY_FOLDER or OC_BINARY_ARCHIVE. Failing."
   exit -1
 fi
 if [[ -z "$OC_BUILD_CONFIG_NAME" ]]; then
@@ -79,8 +80,14 @@ curl -Ls $OC_URL | tar xvz
 oc login https://api.starter-us-east-1.openshift.com --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
 echo "Logged into api.preview.openshift.com"
 
-# Start the build
+# Start the folder build
 if [[ -n "$OC_BINARY_FOLDER" ]]; then
   oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
   echo "Build of $OC_BUILD_CONFIG_NAME from folder $OC_BINARY_FOLDER completed"
+fi
+
+# Start the archive build
+if [[ -n "$OC_BINARY_ARCHIVE" ]]; then
+  oc start-build $OC_BUILD_CONFIG_NAME --from-archive=$OC_BINARY_ARCHIVE --wait=true
+  echo "Build of $OC_BUILD_CONFIG_NAME from archive $OC_BINARY_ARCHIVE completed"
 fi
