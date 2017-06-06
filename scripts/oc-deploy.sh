@@ -65,6 +65,10 @@ if [[ -z "$OC_RELEASE" ]]; then
 fi
 
 OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
+if [[ "$OC_VERSION" == "v1.5.1" ]]; then
+  OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE
+fi
+
 OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
 PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
