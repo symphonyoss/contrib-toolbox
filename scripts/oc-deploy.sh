@@ -43,7 +43,7 @@ if [[ -z "$OC_TOKEN" ]]; then
   echo "Missing OC_TOKEN. Failing."
   exit -1
 fi
-if [[ -z "$OC_BINARY_FOLDER" || -z "$OC_BINARY_ARCHIVE" ]]; then
+if [[ -z "$OC_BINARY_FOLDER" && -z "$OC_BINARY_ARCHIVE" ]]; then
   echo "Missing OC_BINARY_FOLDER or OC_BINARY_ARCHIVE. Failing."
   exit -1
 fi
