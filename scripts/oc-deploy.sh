@@ -33,6 +33,7 @@
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BINARY_ARCHIVE - contains the local path to the binary archive to upload to the container as source
 # - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
+# - OC_TEMPLATE - the path of an OpenShift template to execute; if resolved, it will process and create it before the start-build
 
 # Environment variables overrides:
 # - OC_VERSION
@@ -78,7 +79,13 @@ curl -Ls $OC_URL | tar xvz
 
 # Log into Openshift Online and use project botfarm
 oc login https://api.starter-us-east-1.openshift.com --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
-echo "Logged into api.preview.openshift.com"
+echo "Logged into api.starter-us-east-1.openshift.com"
+
+# Create the DeploymentConfig template, if configured
+if [[ -n "$OC_TEMPLATE" ]]; then
+  oc process -f $OC_TEMPLATE | oc create -f -
+  echo "$OC_TEMPLATE template created"
+fi
 
 # Start the folder build
 if [[ -n "$OC_BINARY_FOLDER" ]]; then
