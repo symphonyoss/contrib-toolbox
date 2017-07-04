@@ -82,7 +82,7 @@ curl -Ls $OC_URL | tar xvz
 oc login https://api.starter-us-east-1.openshift.com --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
 echo "Logged into api.starter-us-east-1.openshift.com"
 
-if [[ -z "$OC_TEMPLATE" && -f $OC_TEMPLATE ]]; then
+if [[ -f ".openshift-template.yaml" ]]; then
   export OC_TEMPLATE=".openshift-template.yaml"
   echo "Found $OC_TEMPLATE OpenShift template"
 fi
