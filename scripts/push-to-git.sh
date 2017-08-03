@@ -84,6 +84,12 @@ push_files() {
   echo "Pushed changes into remote git repo"
 }
 
+cleanup() {
+  cd ..
+  rm -rf ${GIT_REPO}-checkout
+}
+
 setup_git
 checkout_project
 push_files
+cleanup
