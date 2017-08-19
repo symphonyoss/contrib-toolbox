@@ -28,6 +28,7 @@
 # More info on https://docs.openshift.org/latest/dev_guide/builds.html#binary-source
 
 # Environment variables needed:
+# - SKIP_OC_INSTALL - The Openshift Online token
 # - OC_TOKEN - The Openshift Online token
 # - OC_TEMPLATE_PROCESS_ARGS - Arguments passed to the "oc process" command
 # - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.starter-us-east-1.openshift.com
@@ -80,11 +81,13 @@ if [[ "$OC_VERSION" == "v1.4.1" ]]; then
   OC_FOLDER_NAME=openshift-origin-client-tools-$OC_VERSION+$OC_RELEASE
 fi
 
-OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
-PATH=$PWD/$OC_FOLDER_NAME:$PATH
+if [[ "$SKIP_OC_INSTALL" != "true" ]]; then
+  OC_URL="https://github.com/openshift/origin/releases/download/$OC_VERSION/openshift-origin-client-tools-$OC_VERSION-$OC_RELEASE.tar.gz"
+  PATH=$PWD/$OC_FOLDER_NAME:$PATH
 
-# Download and unpack oc
-curl -Ls $OC_URL | tar xvz
+  # Download and unpack oc
+  curl -Ls $OC_URL | tar xvz
+fi
 
 # Log into Openshift Online and use project botfarm
 oc login $OC_ENDPOINT --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
