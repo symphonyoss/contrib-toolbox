@@ -29,7 +29,8 @@
 
 # Environment variables needed:
 # - OC_TOKEN - The Openshift Online token
-# - OC_ENDPOINT - Defaults to https://api.starter-us-east-1.openshift.com
+# - OC_TEMPLATE_PROCESS_ARGS - Arguments passed to the "oc process" command
+# - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.starter-us-east-1.openshift.com
 # - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BINARY_ARCHIVE - contains the local path to the binary archive to upload to the container as source
@@ -61,6 +62,9 @@ fi
 echo "Using Openshift Online project $OC_PROJECT_NAME"
 
 # Define oc defaults
+if [[ -z "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
+  OC_TEMPLATE_PROCESS_ARGS=""
+fi
 if [[ -z "$OC_ENDPOINT" ]]; then
   OC_ENDPOINT="https://api.starter-us-east-1.openshift.com"
 fi
@@ -93,7 +97,7 @@ fi
 
 # Create the DeploymentConfig template, if configured
 if [[ -n "$OC_TEMPLATE" ]]; then
-  oc process -f $OC_TEMPLATE | oc create -f -
+  oc process -f $OC_TEMPLATE $OC_TEMPLATE_PROCESS_ARGS | oc create -f -
   echo "$OC_TEMPLATE template created"
 fi
 
