@@ -29,6 +29,7 @@
 
 # Environment variables needed:
 # - OC_TOKEN - The Openshift Online token
+# - OC_ENDPOINT - Defaults to https://api.starter-us-east-1.openshift.com
 # - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BINARY_ARCHIVE - contains the local path to the binary archive to upload to the container as source
@@ -59,7 +60,10 @@ if [[ -z "$OC_PROJECT_NAME" ]]; then
 fi
 echo "Using Openshift Online project $OC_PROJECT_NAME"
 
-# Define oc package coordinate defaults
+# Define oc defaults
+if [[ -z "$OC_ENDPOINT" ]]; then
+  OC_ENDPOINT="https://api.starter-us-east-1.openshift.com"
+fi
 if [[ -z "$OC_VERSION" ]]; then
   OC_VERSION=v1.5.1
 fi
@@ -79,8 +83,8 @@ PATH=$PWD/$OC_FOLDER_NAME:$PATH
 curl -Ls $OC_URL | tar xvz
 
 # Log into Openshift Online and use project botfarm
-oc login https://api.starter-us-east-1.openshift.com --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
-echo "Logged into api.starter-us-east-1.openshift.com"
+oc login $OC_ENDPOINT --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
+echo "Logged into $OC_ENDPOINT"
 
 if [[ -f ".openshift-template.yaml" ]]; then
   export OC_TEMPLATE=".openshift-template.yaml"
