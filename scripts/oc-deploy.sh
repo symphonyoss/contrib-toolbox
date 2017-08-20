@@ -29,6 +29,7 @@
 
 # Environment variables needed:
 # - SKIP_OC_INSTALL - The Openshift Online token
+# - OC_DELETE_LABEL - If set, it will trigger a 'oc deleta all -l <OC_DELETE_LABEL>; defaults to null'
 # - OC_TOKEN - The Openshift Online token; supports branch override
 # - OC_TEMPLATE_PROCESS_ARGS - Arguments passed to the "oc process" command; supports branch override
 # - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.starter-us-east-1.openshift.com
@@ -126,6 +127,14 @@ OC_TEMPLATE=${VAR_VALUE}
 if [[ -f ".openshift-template.yaml" ]]; then
   export OC_TEMPLATE=".openshift-template.yaml"
   echo "Found $OC_TEMPLATE OpenShift template"
+fi
+
+get_branch_var "OC_DELETE_LABEL"
+OC_DELETE_LABEL=${VAR_VALUE}
+if [[ -n "$OC_DELETE_LABEL" ]]; then
+  oc delete all -l $OC_DELETE_LABEL
+  echo "Deleted all resources with label $OC_DELETE_LABEL ; ; sleeping 10 secs ..."
+  sleep 10
 fi
 
 # Create the DeploymentConfig template, if configured
