@@ -29,40 +29,68 @@
 
 # Environment variables needed:
 # - SKIP_OC_INSTALL - The Openshift Online token
-# - OC_TOKEN - The Openshift Online token
-# - OC_TEMPLATE_PROCESS_ARGS - Arguments passed to the "oc process" command
+# - OC_TOKEN - The Openshift Online token; supports branch override
+# - OC_TEMPLATE_PROCESS_ARGS - Arguments passed to the "oc process" command; supports branch override
 # - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.starter-us-east-1.openshift.com
-# - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm
+# - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm; supports branch override
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BINARY_ARCHIVE - contains the local path to the binary archive to upload to the container as source
-# - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift
+# - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift; supports branch override
 # - OC_TEMPLATE - the path of an OpenShift template to execute; if resolved, it will process and create it 
-# before the start-build; defaults to '.openshift-template.yaml', if the file exists
+# before the start-build; defaults to '.openshift-template.yaml', if the file exists; supports branch override
 
 # Environment variables overrides:
 # - OC_VERSION
 # - OC_RELEASE
 
+# All variables (ie OC_TOKEN) that support branch overrides can be overridden by 
+# branch specific values (ie OC_TOKEN_DEV=blah, where branch is 'dev'); such vars
+# take precedence over the original values.
+
+# Read the branch name from params
+BRANCH_NAME=`echo $1 | awk '{print toupper($0)}'`
+echo "Running oc-token on branch $BRANCH_NAME"
+
+# Override branch specific vars
+function get_branch_var() {
+  VAR_NAME=$1
+  declare BR_VAR=${VAR_NAME}_${BRANCH_NAME}
+  VAR_VALUE=${!BR_VAR}
+  if [[ -z "$VAR_VALUE" ]]; then
+    VAR_VALUE=${!VAR_NAME}
+  fi
+}
+
+get_branch_var "OC_TOKEN"
+OC_TOKEN=${VAR_VALUE}
 # Fail if no mandatory vars are missing
 if [[ -z "$OC_TOKEN" ]]; then
   echo "Missing OC_TOKEN. Failing."
   exit -1
 fi
+
 if [[ -z "$OC_BINARY_FOLDER" && -z "$OC_BINARY_ARCHIVE" ]]; then
   echo "Missing OC_BINARY_FOLDER or OC_BINARY_ARCHIVE. Failing."
   exit -1
 fi
+
+get_branch_var "OC_BUILD_CONFIG_NAME"
+OC_BUILD_CONFIG_NAME=${VAR_VALUE}
 if [[ -z "$OC_BUILD_CONFIG_NAME" ]]; then
   echo "Missing OC_BUILD_CONFIG_NAME. Failing."
   exit -1
 fi
 
+get_branch_var "OC_PROJECT_NAME"
+OC_PROJECT_NAME=${VAR_VALUE}
 if [[ -z "$OC_PROJECT_NAME" ]]; then
   export OC_PROJECT_NAME=botfarm
 fi
 echo "Using Openshift Online project $OC_PROJECT_NAME"
 
 # Define oc defaults
+get_branch_var "OC_TEMPLATE_PROCESS_ARGS"
+OC_TEMPLATE_PROCESS_ARGS=${VAR_VALUE}
 if [[ -z "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
   OC_TEMPLATE_PROCESS_ARGS=""
 fi
@@ -93,6 +121,8 @@ fi
 oc login $OC_ENDPOINT --token=$OC_TOKEN ; oc project $OC_PROJECT_NAME
 echo "Logged into $OC_ENDPOINT"
 
+get_branch_var "OC_TEMPLATE"
+OC_TEMPLATE=${VAR_VALUE}
 if [[ -f ".openshift-template.yaml" ]]; then
   export OC_TEMPLATE=".openshift-template.yaml"
   echo "Found $OC_TEMPLATE OpenShift template"
@@ -105,7 +135,7 @@ if [[ -n "$OC_TEMPLATE" ]]; then
 fi
 
 # Start the folder build
-RESULT = 0
+RESULT=0
 if [[ -n "$OC_BINARY_FOLDER" ]]; then
   oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
   RESULT=$?
@@ -116,7 +146,7 @@ elif [[ -n "$OC_BINARY_ARCHIVE" ]]; then
   echo "Build of $OC_BUILD_CONFIG_NAME from archive $OC_BINARY_ARCHIVE completed"
 fi
 
-if [[ RESULT != 0 ]]; then
+if [[ $RESULT != 0 ]]; then
   echo "Openshift deployment failed with error code $RESULT, see errors above"
   exit -1
 else
