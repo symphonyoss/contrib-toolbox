@@ -105,13 +105,20 @@ if [[ -n "$OC_TEMPLATE" ]]; then
 fi
 
 # Start the folder build
+RESULT = 0
 if [[ -n "$OC_BINARY_FOLDER" ]]; then
   oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
+  RESULT=$?
   echo "Build of $OC_BUILD_CONFIG_NAME from folder $OC_BINARY_FOLDER completed"
+elif [[ -n "$OC_BINARY_ARCHIVE" ]]; then
+  oc start-build $OC_BUILD_CONFIG_NAME --from-archive=$OC_BINARY_ARCHIVE --wait=true
+  RESULT=$?
+  echo "Build of $OC_BUILD_CONFIG_NAME from archive $OC_BINARY_ARCHIVE completed"
 fi
 
-# Start the archive build
-if [[ -n "$OC_BINARY_ARCHIVE" ]]; then
-  oc start-build $OC_BUILD_CONFIG_NAME --from-archive=$OC_BINARY_ARCHIVE --wait=true
-  echo "Build of $OC_BUILD_CONFIG_NAME from archive $OC_BINARY_ARCHIVE completed"
+if [[ RESULT != 0 ]]; then
+  echo "Openshift deployment failed with error code $RESULT, see errors above"
+  exit -1
+else
+  echo "Openshift deployment successful!"
 fi
