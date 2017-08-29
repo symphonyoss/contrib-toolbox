@@ -31,12 +31,12 @@
 # - SKIP_OC_INSTALL - The Openshift Online token
 # - OC_DELETE_LABEL - If set, it will trigger a 'oc deleta all -l <OC_DELETE_LABEL>; defaults to null'
 # - OC_TOKEN - The Openshift Online token; supports branch override
-# - OC_TEMPLATE_PROCESS_ARGS - Arguments passed to the "oc process" command; supports branch override
+# - OC_TEMPLATE_PROCESS_ARGS - Comma-separated list of env vars to pass to the OC template
 # - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.starter-us-east-1.openshift.com
 # - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm; supports branch override
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
 # - OC_BINARY_ARCHIVE - contains the local path to the binary archive to upload to the container as source
-# - OC_BUILD_CONFIG_NAME - the name of the BuildConfig registered in Openshift; supports branch override
+# - BOT_NAME - the name of the BuildConfig registered in Openshift; supports branch override
 # - OC_TEMPLATE - the path of an OpenShift template to execute; if resolved, it will process and create it 
 # before the start-build; defaults to '.openshift-template.yaml', if the file exists; supports branch override
 
@@ -76,10 +76,10 @@ if [[ -z "$OC_BINARY_FOLDER" && -z "$OC_BINARY_ARCHIVE" ]]; then
   exit -1
 fi
 
-get_branch_var "OC_BUILD_CONFIG_NAME"
-OC_BUILD_CONFIG_NAME=${VAR_VALUE}
-if [[ -z "$OC_BUILD_CONFIG_NAME" ]]; then
-  echo "Missing OC_BUILD_CONFIG_NAME. Failing."
+get_branch_var "BOT_NAME"
+BOT_NAME=${VAR_VALUE}
+if [[ -z "$BOT_NAME" ]]; then
+  echo "Missing BOT_NAME. Failing."
   exit -1
 fi
 
@@ -91,11 +91,16 @@ fi
 echo "Using Openshift Online project $OC_PROJECT_NAME"
 
 # Define oc defaults
-get_branch_var "OC_TEMPLATE_PROCESS_ARGS"
-OC_TEMPLATE_PROCESS_ARGS=${VAR_VALUE}
+export PROCESS_ARGS = ""
 if [[ -z "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
-  OC_TEMPLATE_PROCESS_ARGS=""
+  for i in $(echo $OC_TEMPLATE_PROCESS_ARGS | sed "s/,/ /g")
+  do
+    get_branch_var $i
+    export PROCESS_ARGS = "$PROCESS_ARGS -p ${i}=${VAR_VALUE}"
+  done
+  echo "Process args is: ${PROCESS_ARGS}"
 fi
+
 if [[ -z "$OC_ENDPOINT" ]]; then
   OC_ENDPOINT="https://api.starter-us-east-1.openshift.com"
 fi
@@ -140,20 +145,20 @@ fi
 
 # Create the DeploymentConfig template, if configured
 if [[ -n "$OC_TEMPLATE" ]]; then
-  oc process -f $OC_TEMPLATE $OC_TEMPLATE_PROCESS_ARGS | oc create -f -
+  oc process -f $OC_TEMPLATE $PROCESS_ARGS | oc create -f -
   echo "$OC_TEMPLATE template created"
 fi
 
 # Start the folder build
 RESULT=0
 if [[ -n "$OC_BINARY_FOLDER" ]]; then
-  oc start-build $OC_BUILD_CONFIG_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
+  oc start-build $BOT_NAME --from-dir=$OC_BINARY_FOLDER --wait=true
   RESULT=$?
-  echo "Build of $OC_BUILD_CONFIG_NAME from folder $OC_BINARY_FOLDER completed"
+  echo "Build of $BOT_NAME from folder $OC_BINARY_FOLDER completed"
 elif [[ -n "$OC_BINARY_ARCHIVE" ]]; then
-  oc start-build $OC_BUILD_CONFIG_NAME --from-archive=$OC_BINARY_ARCHIVE --wait=true
+  oc start-build $BOT_NAME --from-archive=$OC_BINARY_ARCHIVE --wait=true
   RESULT=$?
-  echo "Build of $OC_BUILD_CONFIG_NAME from archive $OC_BINARY_ARCHIVE completed"
+  echo "Build of $BOT_NAME from archive $OC_BINARY_ARCHIVE completed"
 fi
 
 if [[ $RESULT != 0 ]]; then
