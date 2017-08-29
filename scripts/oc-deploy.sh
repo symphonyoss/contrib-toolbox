@@ -98,7 +98,7 @@ if [[ -n "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
   do
     VAR_NAME=$i
     get_branch_var $i
-    export PROCESS_ARGS="$PROCESS_ARGS -p ${i}=\"${VAR_VALUE}\""
+    export PROCESS_ARGS="$PROCESS_ARGS -p ${i}='${VAR_VALUE}'"
   done
   echo "Process args is: ${PROCESS_ARGS}"
 fi
