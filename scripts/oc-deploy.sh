@@ -60,6 +60,7 @@ function get_branch_var() {
   # echo "Get Branch var for name: ${VAR_NAME}, value: ${!VAR_NAME}, br_name: ${BR_VAR}, br_value: ${VAR_VALUE}"
   if [[ -z "$VAR_VALUE" ]]; then
     VAR_VALUE=${!VAR_NAME}
+    BR_VAR=""
   fi
 }
 
@@ -95,8 +96,12 @@ export PROCESS_ARGS=""
 if [[ -n "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
   for i in $(echo $OC_TEMPLATE_PROCESS_ARGS | sed "s/,/ /g")
   do
+    VAR_NAME=$i
     get_branch_var $i
-    export PROCESS_ARGS="$PROCESS_ARGS -p ${i}=\"${VAR_VALUE}\""
+    # export PROCESS_ARGS="$PROCESS_ARGS -p ${i}=\"${VAR_VALUE}\""
+    if [[ -n "$BR_VAR" ]]; then
+      VAR_NAME=$BR_VAR
+    export PROCESS_ARGS="$PROCESS_ARGS -p ${i}=\$${VAR_NAME}"
   done
   echo "Process args is: ${PROCESS_ARGS}"
 fi
