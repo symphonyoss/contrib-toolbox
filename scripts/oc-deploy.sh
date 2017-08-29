@@ -101,7 +101,7 @@ if [[ -n "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
     # export PROCESS_ARGS="$PROCESS_ARGS -p ${i}=\"${VAR_VALUE}\""
     if [[ -n "$BR_VAR" ]]; then
       VAR_NAME=$BR_VAR
-    done
+    fi
     export PROCESS_ARGS="$PROCESS_ARGS -p ${i}=\$${VAR_NAME}"
   done
   echo "Process args is: ${PROCESS_ARGS}"
