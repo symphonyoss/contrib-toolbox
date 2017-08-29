@@ -92,7 +92,7 @@ echo "Using Openshift Online project $OC_PROJECT_NAME"
 
 # Define oc defaults
 export PROCESS_ARGS=""
-if [[ -z "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
+if [[ -n "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
   for i in $(echo $OC_TEMPLATE_PROCESS_ARGS | sed "s/,/ /g")
   do
     get_branch_var $i
