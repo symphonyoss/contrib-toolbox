@@ -57,7 +57,7 @@ function get_branch_var() {
   VAR_NAME=$1
   declare BR_VAR=${VAR_NAME}_${BRANCH_NAME}
   VAR_VALUE=${!BR_VAR}
-  echo "Get Branch var for name: ${VAR_NAME}, value: ${!VAR_NAME}, br_name: ${BR_VAR}, br_value: ${VAR_VALUE}"
+  # echo "Get Branch var for name: ${VAR_NAME}, value: ${!VAR_NAME}, br_name: ${BR_VAR}, br_value: ${VAR_VALUE}"
   if [[ -z "$VAR_VALUE" ]]; then
     VAR_VALUE=${!VAR_NAME}
   fi
