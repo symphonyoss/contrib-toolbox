@@ -31,7 +31,7 @@
 # - SKIP_OC_INSTALL - The Openshift Online token
 # - OC_DELETE_LABEL - If set, it will trigger a 'oc deleta all -l <OC_DELETE_LABEL>; defaults to null'
 # - OC_TOKEN - The Openshift Online token; supports branch override
-# - OC_TEMPLATE_PROCESS_ARGS - Comma-separated list of env vars to pass to the OC template
+# - OC_TEMPLATE_PROCESS_ARGS - Comma-separated list of env vars to pass to the OC template (ie "BOT_NAME,S2I_IMAGE")
 # - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.starter-us-east-1.openshift.com
 # - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm; supports branch override
 # - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
@@ -98,7 +98,7 @@ if [[ -n "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
   do
     VAR_NAME=$i
     get_branch_var $i
-    export PROCESS_ARGS="$PROCESS_ARGS -p ${i}='${VAR_VALUE}'"
+    export PROCESS_ARGS="$PROCESS_ARGS -p ${i}=${VAR_VALUE}"
   done
   echo "Process args is: ${PROCESS_ARGS}"
 fi
