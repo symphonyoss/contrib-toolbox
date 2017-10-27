@@ -27,22 +27,24 @@
 # and starts an image build, passing the binaries from file.
 # More info on https://docs.openshift.org/latest/dev_guide/builds.html#binary-source
 
-# Environment variables needed:
-# - SKIP_OC_INSTALL - The Openshift Online token
-# - OC_DELETE_LABEL - If set, it will trigger a 'oc deleta all -l <OC_DELETE_LABEL>; defaults to null'
-# - OC_TOKEN - The Openshift Online token; supports branch override
-# - OC_TEMPLATE_PROCESS_ARGS - Comma-separated list of env vars to pass to the OC template (ie "BOT_NAME,S2I_IMAGE")
-# - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.starter-us-east-1.openshift.com
-# - OC_PROJECT_NAME - The Openshift Online project to use; default is botfarm; supports branch override
-# - OC_BINARY_FOLDER - contains the local path to the binary folder to upload to the container as source
-# - OC_BINARY_ARCHIVE - contains the local path to the binary archive to upload to the container as source
-# - BOT_NAME - the name of the BuildConfig registered in Openshift; supports branch override
-# - OC_TEMPLATE - the path of an OpenShift template to execute; if resolved, it will process and create it 
-# before the start-build; defaults to '.openshift-template.yaml', if the file exists; supports branch override
+# Mandatory configurations:
+# - OC_TOKEN - The Openshift Online token; mandatory; supports branch override
+# - BOT_NAME - Name of the BuildConfig registered in Openshift; mandatory; supports branch override
+# - OC_BINARY_FOLDER - Local path to the binary folder to upload to the container as source; mandatory (unless OC_BINARY_ARCHIVE is set)
+# - OC_BINARY_ARCHIVE - Local path to the binary archive to upload to the container as source; mandatory (unless OC_BINARY_FOLDER is set)
 
-# Environment variables overrides:
-# - OC_VERSION
-# - OC_RELEASE
+# Default and mandatory configurations:
+# - OC_TEMPLATE - Path of an OpenShift template to execute; if resolved, it will process and create it 
+# before the start-build; defaults to '.openshift-template.yaml', if the file exists; supports branch override
+# - OC_PROJECT_NAME - The Openshift Online project to use; default is 'ssf-dev'; supports branch override
+# - OC_ENDPOINT - OpenShift server endpoint; defaults to https://api.pro-us-east-1.openshift.com
+
+# Optional configurations:
+# - SKIP_OC_INSTALL - Skips the OpenShift CLI (oc) installation; defaults to false
+# - OC_DELETE_LABEL - If true, trigger a 'oc delete all -l <OC_DELETE_LABEL>; defaults to false; example OC_DELETE_LABEL="app=mybot"
+# - OC_TEMPLATE_PROCESS_ARGS - Comma-separated list of env vars to pass to the OC template (ie "BOT_NAME,S2I_IMAGE")
+# - OC_VERSION - OpenShift CLI version, see https://github.com/openshift/origin/releases ; defaults to "1.5.1"
+# - OC_RELEASE - OpenShift CLI release, see https://github.com/openshift/origin/releases ; defaults to "7b451fc-linux-64bit"
 
 # All variables (ie OC_TOKEN) that support branch overrides can be overridden by 
 # branch specific values (ie OC_TOKEN_DEV=blah, where branch is 'dev'); such vars
@@ -87,7 +89,7 @@ fi
 get_branch_var "OC_PROJECT_NAME"
 OC_PROJECT_NAME=${VAR_VALUE}
 if [[ -z "$OC_PROJECT_NAME" ]]; then
-  export OC_PROJECT_NAME=botfarm
+  export OC_PROJECT_NAME="ssf-dev"
 fi
 echo "Using Openshift Online project $OC_PROJECT_NAME"
 
@@ -104,7 +106,7 @@ if [[ -n "$OC_TEMPLATE_PROCESS_ARGS" ]]; then
 fi
 
 if [[ -z "$OC_ENDPOINT" ]]; then
-  OC_ENDPOINT="https://api.starter-us-east-1.openshift.com"
+  OC_ENDPOINT="https://api.pro-us-east-1.openshift.com"
 fi
 if [[ -z "$OC_VERSION" ]]; then
   OC_VERSION=v1.5.1
