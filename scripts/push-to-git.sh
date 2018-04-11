@@ -56,7 +56,7 @@ if [[ -z "$FILES_TO_PUSH" ]]; then
   export FILES_TO_PUSH="*"
 fi
 
-if [[ -z "$COMMIT_MESSAGE"]]; then
+if [[ -z "$COMMIT_MESSAGE" ]]; then
   export COMMIT_MESSAGE="$GIT_USER_NAME is pushing $FILES_TO_PUSH $COMMIT_MESSAGE_EXTRA"
 fi
 
